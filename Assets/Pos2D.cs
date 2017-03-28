@@ -77,6 +77,9 @@ public struct Pos2D {
 	public static Pos2D RoundVector2(Vector2 vec){
 		return new Pos2D(Mathf.RoundToInt(vec.x), Mathf.RoundToInt(vec.y));
 	}
+	public static Pos2D FloorVector2(Vector2 vec){
+		return new Pos2D((int)vec.x, (int)vec.y);
+	}
 	public override bool Equals(object o) {
 		if (o.GetType() == typeof(Pos2D)) {
 			Pos2D p = (Pos2D)o;

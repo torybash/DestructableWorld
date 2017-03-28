@@ -22,7 +22,9 @@ public class TestBall : MonoBehaviour {
 		var velocity = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")) * speed;
 		var move = velocity * Time.fixedDeltaTime;
 		//body.MovePosition(newPos);
-		
-		map.CheckCollision(bodyRect, move);
+
+		Vector2 newPos;
+		map.CheckCollision(bodyRect, move, out newPos);
+		transform.position = newPos;
 	}
 }
