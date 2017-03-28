@@ -1,11 +1,11 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Map : MonoBehaviour {
 
 	[SerializeField] private MeshRenderer rend;
-	[SerializeField] private MeshFilter filter;
 
 	[SerializeField] private int xSize = 1920;
 	[SerializeField] private int ySize = 1080;
@@ -18,18 +18,24 @@ public class Map : MonoBehaviour {
 	private Texture2D _tex;
 	private Material _rendMat;
 
+	public int XSize { get { return xSize; } }
+	public int YSize { get { return ySize; } }
+	public float PixPerUnit { get { return pixPerUnit; } }
+
+
+
+	public Texture2D Tex { get { return _tex; } }
+
+
 	private Color _alphaColor = new Color(0,0,0,0);
 
 
 	void Start () {
-		transform.localScale = new Vector3(xSize, ySize, 1f) / pixPerUnit;
-		transform.position = new Vector3(xSize, ySize, 1f) / pixPerUnit / 2f;
+		rend.transform.localScale = new Vector3(xSize, ySize, 1f) / pixPerUnit;
+		rend.transform.position = new Vector3(xSize, ySize, 1f) / pixPerUnit / 2f;
 
 		_tex = new Texture2D(xSize, ySize, TextureFormat.ARGB32, false);
-
-		Debug.Log("_Tex filtermode: "+ _tex.filterMode);
-//		_Tex.filterMode = FilterMode.Point;
-
+		_tex.filterMode = FilterMode.Point;
 		_rendMat = rend.material;
 
 		_tex.SetPixels32(testTex.GetPixels32());
@@ -60,6 +66,15 @@ public class Map : MonoBehaviour {
 		_tex.Apply();
 
 		_rendMat.mainTexture = _tex;
+	}
 
+	public bool IsTileFull(int x, int y)
+	{
+		return _tex.GetPixel(x, y).a > 0;
+	}
+
+	public void CheckCollision(Rect bodyRect)
+	{
+		
 	}
 }
