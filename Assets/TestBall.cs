@@ -6,7 +6,7 @@ using UnityEngine;
 public class TestBall : MonoBehaviour {
 
 	[SerializeField]
-	private float speed = 8f;
+	private float speed = 1f;
 
 	//private Rigidbody2D body;
 
@@ -18,10 +18,11 @@ public class TestBall : MonoBehaviour {
 	}
 
 	void FixedUpdate(){
-		var newPos = (Vector2)transform.position + new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")) * speed;
+		var bodyRect = new Rect((Vector2)transform.position, transform.localScale);
+		var velocity = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")) * speed;
+		var move = velocity * Time.fixedDeltaTime;
 		//body.MovePosition(newPos);
 		
-		var newBodyRect = new Rect(newPos, transform.localScale);
-		map.CheckCollision(newBodyRect);
+		map.CheckCollision(bodyRect, move);
 	}
 }

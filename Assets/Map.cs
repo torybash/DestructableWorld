@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Text;
 
 public class Map : MonoBehaviour {
 
@@ -68,13 +69,46 @@ public class Map : MonoBehaviour {
 		_rendMat.mainTexture = _tex;
 	}
 
+	public bool IsAnyTilesFull(Pos2D[] pos2Ds){
+		for (int i = 0; i < pos2Ds.Length; i++) {
+			var pos2D = pos2Ds[i];
+			if (IsTileFull(pos2D.x, pos2D.y)) return true;
+		}
+		return false;
+	}
+
 	public bool IsTileFull(int x, int y)
 	{
 		return _tex.GetPixel(x, y).a > 0;
 	}
 
-	public void CheckCollision(Rect bodyRect)
+	public void CheckCollision(Rect bodyRect, Vector2 move)
 	{
-		
+		var cornerPositions = new Vector2[]{
+			new Vector2(bodyRect.xMax, bodyRect.yMax),
+			new Vector2(bodyRect.xMax, bodyRect.yMin),
+			new Vector2(bodyRect.xMin, bodyRect.yMax),
+			new Vector2(bodyRect.xMin, bodyRect.yMin),
+		};
+
+		var cornerPos2Ds = new Pos2D[4];
+		for (int i = 0; i < cornerPositions.Length; i++) {
+			var pos = cornerPositions[i];
+
+			cornerPos2Ds[i] = new Pos2D(Mathf.RoundToInt(pos.x), Mathf.RoundToInt(pos.y));
+		}
+
+		//Pre-check
+		if (IsAnyTilesFull(cornerPos2Ds)){
+			Debug.LogError("Pre-check failed!")	;
+		}
+
+		var startPos = Pos2D.RoundVector2(bodyRect.position);
+		var goalEndPos = Pos2D.RoundVector2(bodyRect.position + move);
+
+		int movesCount = Mathf.Abs(startPos.x - goalEndPos.x) + Mathf.Abs(startPos.y - goalEndPos.y);
+		Debug.Log("start: " + startPos + ", end: "+ goalEndPos + ", movesCount: " + movesCount);
 	}
+
+
 }
