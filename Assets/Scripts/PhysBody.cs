@@ -14,11 +14,15 @@ public class PhysBody : MonoBehaviour
 
 	[SerializeField]
 	private float maxSpeed = 10f;
+	[SerializeField]
+	private float drag = 0.95f;
 
 	private Rect _bodyRect;
 
+	private List<Vector2> _blockedDirections;
+	public bool IsGrounded { get { return _blockedDirections != null && _blockedDirections.Contains(Vector2.down); } }
 
-	private float gravity = -10f;
+	public const float GRAVITY = -10f;
 
 	[SerializeField]
 	Map map;
@@ -28,15 +32,32 @@ public class PhysBody : MonoBehaviour
 	{
 		_bodyRect = new Rect((Vector2)transform.position, transform.localScale);
 
-		_velocity = Vector2.ClampMagnitude(_velocity + gravity * Vector2.up * Time.fixedDeltaTime, maxSpeed);
+		_velocity = Vector2.ClampMagnitude(_velocity + GRAVITY * Vector2.up * Time.fixedDeltaTime, maxSpeed);
+
+		
 
 		var move = _velocity * Time.fixedDeltaTime;
 		if (move != Vector2.zero)
 		{
-			Vector2 newPos;
-			map.MoveRect(_bodyRect, move, out newPos);
+			var expectedPos = _bodyRect.position + move;
+			Vector2 newPos; List<Vector2> blockedDirections;
+			Phys.MoveRect(_bodyRect, move, out newPos, out blockedDirections);
+			_blockedDirections = blockedDirections;
 			transform.position = newPos;
+
+			if (expectedPos.x != newPos.x)
+				_velocity.x = 0;
+			if (expectedPos.y != newPos.y)
+				_velocity.y = 0;
 		}
+
+		_velocity *= 1f / (1f + drag * Time.fixedDeltaTime); 
+	}
+
+	public void AddVelocity(Vector2 vec)
+	{
+		_velocity = Vector2.ClampMagnitude(_velocity + vec, maxSpeed);
+
 	}
 
 	public void AddAcceleration(Vector2 acc)
